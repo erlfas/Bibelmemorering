@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"testing"
 )
@@ -252,7 +251,10 @@ func TestMakeFirstTransformation3(t *testing.T) {
 	text := `Herren er min hyrde,
           jeg mangler ikke noe.`
 	trans := makeFirstTransformation(text)
-	fmt.Println(trans)
+	if trans != `H e m h,
+ j m i n.` {
+		t.Error("Wrong output")
+	}
 }
 
 func TestMakeFirstTransformation2(t *testing.T) {
@@ -273,12 +275,13 @@ func TestMakeFirstTransformation(t *testing.T) {
 
 func TestIsWord5(t *testing.T) {
 	text := "på"
+
 	isWord, ending := isWord(text)
 	if isWord != true {
 		t.Error("Expected true")
 	}
 	if ending != "" {
-		t.Error("Expected ''")
+		t.Error("Expected '' but got", ending)
 	}
 }
 
@@ -295,10 +298,7 @@ func TestMakeFirstTransformation4(t *testing.T) {
           Han fører meg på rettferdighets stier
           for sitt navns skyld.`
 
-	fmt.Println(makeFirstTransformation(sal23))
-	//fmt.Println(makeSecondTransformation(sal23))
-	//fmt.Println(makeThirdTransformation(sal23))
-	//fmt.Println(makeFourthTransformation(sal23))
+	makeFirstTransformation(sal23)
 }
 
 func TestHtmlFilter(t *testing.T) {
@@ -316,7 +316,7 @@ func TestHtmlFilter(t *testing.T) {
 
 	output := template.HTML(htmlFilter(makeFirstTransformation(txt)))
 
-	if output != "1 E s a D.<br/> <br/><br/> H e m h,<br/> j m i n.<br/> <br/><br/> 2 H l m l i g e,<br/> h l m t v d j f h.<br/> <br/><br/> 3 H g m n l.<br/> H f m p r s<br/> f s n s." {
-		t.Error("Wrong output")
+	if output != "1 E s a D.<br/> <br/> H e m h,<br/> j m i n.<br/> <br/> 2 H l m l i g e,<br/> h l m t v d j f h.<br/> <br/> 3 H g m n l.<br/> H f m p r s<br/> f s n s." {
+		t.Error("Wrong output. Got: ", output)
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -88,15 +89,17 @@ func makeFirstTransformation(text string) string {
 	words := getTokens(text)
 	var wordsNew []string
 	for _, word := range words {
-		wordTrimmed := strings.Trim(word, " ")
-		if isWord, ending := isWord(wordTrimmed); isWord {
-			wordsNew = append(wordsNew, string(wordTrimmed[0])+ending)
+		w := word
+		if isWord, ending := isWord(w); isWord {
+			toAdd := string(w[0]) + ending
+			wordsNew = append(wordsNew, toAdd)
 		} else {
-			wordsNew = append(wordsNew, wordTrimmed)
+			wordsNew = append(wordsNew, w)
 		}
 	}
 
-	return strings.Join(wordsNew, " ")
+	s := strings.Join(wordsNew, " ")
+	return s
 }
 
 func getTokens(text string) []string {
@@ -176,28 +179,28 @@ func isWord(word string) (bool, string) {
 		return false, ""
 	}
 
-	isNumber := true
-	for _, r := range word {
-		if !unicode.IsNumber(r) && !unicode.IsDigit(r) {
-			isNumber = false
-		}
-	}
-
-	if isNumber {
+	// hvis det er et tall
+	if _, err := strconv.Atoi(word); err == nil {
 		return false, ""
 	}
 
-	var runes []rune
-	for i := len(word) - 1; i >= 0; i-- {
-		r := rune(word[i])
-		if erTegn(r) {
-			runes = append(runes, r)
-		} else {
+	runes := []rune(word)
+	idx := len(runes)
+	for i := len(runes) - 1; i >= 0; i-- {
+		r := runes[i]
+		if erBokstav(r) {
+			idx = i
 			break
 		}
 	}
 
-	ending := reverse(string(runes))
+	idx++
+	ending := ""
+	if idx >= len(runes) {
+		ending = ""
+	} else {
+		ending = string(runes[idx:])
+	}
 
 	return true, ending
 }
